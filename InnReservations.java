@@ -99,7 +99,7 @@ class InnReservations {
                 switch (s.nextLine()) {
                     case "A":
                         System.out.println("Admin");
-                        System.out.println("Status: " + isFull ? "Full" : "Empty"); // add "no database"
+                        System.out.println("Status: " + (isFull ? "Full" : "Empty")); // add "no database"
                         System.out.println("Reservations: " + reservationsSize);
                         System.out.println("Rooms: " + roomsSize);
                         break;
