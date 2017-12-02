@@ -1,3 +1,3 @@
-jdbc:mysql://cslvm74.csc.calpoly.edu/rhartzel
-rhartzel
-Penguin1123581321
+jdbc:mysql://cslvm74.csc.calpoly.edu/acdelgad
+acdelgad
+a;sldkfjgh

@@ -103,6 +103,7 @@ class InnReservations {
                         System.out.println("Guest");
                         break;
                     case "Q":
+                        System.out.println("Goodbye");
                         inConsole = false;
                         break;
                     default:
