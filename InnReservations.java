@@ -17,6 +17,8 @@ class InnReservations {
         String url = scan.nextLine();	
         String userID = scan.nextLine();
         String pword = scan.nextLine();
+        int roomsSize;
+        int reservationsSize;
         boolean isFull;
         boolean inConsole = true;
         Scanner s = new Scanner(System.in);
@@ -77,13 +79,15 @@ class InnReservations {
             pstmt = conn.prepareStatement(query);
             rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
             rset.next( );
-            isFull = rset.getInt("COUNT(*)") >= 10;
+            roomsSize = rset.getInt("COUNT(*)");
+            isFull = roomsSize >= 10;
 
             query = "select COUNT(*) from reservations";
             pstmt = conn.prepareStatement(query);
             rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
             rset.next( );
-            isFull = isFull && rset.getInt("COUNT(*)") >= 600;
+            reservationsSize = rset.getInt("COUNT(*)");
+            isFull = isFull && reservationsSize >= 600;
 
             System.out.println("Enter letter for subsystem:");
             System.out.println("A - Admin");
@@ -95,6 +99,9 @@ class InnReservations {
                 switch (s.nextLine()) {
                     case "A":
                         System.out.println("Admin");
+                        System.out.println("Status: " + isFull ? "Full" : "Empty"); // add "no database"
+                        System.out.println("Reservations: " + reservationsSize);
+                        System.out.println("Rooms: " + roomsSize);
                         break;
                     case "O":
                         System.out.println("Owner");
