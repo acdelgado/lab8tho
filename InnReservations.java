@@ -18,6 +18,8 @@ class InnReservations {
         String userID = scan.nextLine();
         String pword = scan.nextLine();
         boolean isFull;
+        boolean inConsole = true;
+        Scanner s = new Scanner(System.in);
         int i = 0;
 
         try {
@@ -83,7 +85,32 @@ class InnReservations {
             rset.next( );
             isFull = isFull && rset.getInt("COUNT(*)") >= 600;
 
-            System.out.println(isFull);
+            System.out.println("Enter letter for subsystem:");
+            System.out.println("A - Admin");
+            System.out.println("O - Owner");
+            System.out.println("G - Guest");
+            System.out.println("---------");
+            System.out.println("Q - Quit");
+            while (inConsole) {
+                switch (s.nextLine()) {
+                    case "A":
+                        System.out.println("Admin");
+                        break;
+                    case "O":
+                        System.out.println("Owner");
+                        break;
+                    case "G":
+                        System.out.println("Guest");
+                        break;
+                    case "Q":
+                        inConsole = false;
+                        break;
+                    default:
+                        System.out.println("Invalid option");
+                        break;
+                }
+            }
+
         } 
         catch (Exception ex) {
             ex.printStackTrace( );
