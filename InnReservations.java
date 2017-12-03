@@ -329,7 +329,6 @@ class InnReservations {
                         System.out.println("A - Check Room Availability");
                         System.out.println("P - Check Room Pricing");
                         System.out.println("R - Reserve a Room");
-                        System.out.println("C - Complete a Reservation");
                         System.out.println("RET - Return\n");
                         switch(s.nextLine())
                         {
@@ -379,6 +378,11 @@ class InnReservations {
        ResultSet rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
        ResultSetMetaData rsmd = rset.getMetaData();
        int columnsNumber = rsmd.getColumnCount();
+       System.out.println();
+       for(int k = 1; k <= columnsNumber; k++)
+       {
+          System.out.print(rsmd.getColumnName(k) + "\t");
+       }
        System.out.println();
        while (rset.next()) {
          for (int j = 1; j <= columnsNumber; j++) {
