@@ -74,37 +74,179 @@ class InnReservations {
             catch (Exception ee) {
                 System.out.println("ee96: " + ee);
             }
-
-            query = "select COUNT(*) from rooms";
-            pstmt = conn.prepareStatement(query);
-            rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
-            rset.next( );
-            roomsSize = rset.getInt("COUNT(*)");
-            isFull = roomsSize >= 10;
-
-            query = "select COUNT(*) from reservations";
-            pstmt = conn.prepareStatement(query);
-            rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
-            rset.next( );
-            reservationsSize = rset.getInt("COUNT(*)");
-            isFull = isFull && reservationsSize >= 600;
-
-            System.out.println("Enter letter for subsystem:");
-            System.out.println("A - Admin");
-            System.out.println("O - Owner");
-            System.out.println("G - Guest");
-            System.out.println("---------");
-            System.out.println("Q - Quit");
+            
             while (inConsole) {
+               System.out.println("Enter letter for subsystem:");
+               System.out.println("A - Admin");
+               System.out.println("O - Owner");
+               System.out.println("G - Guest");
+               System.out.println("---------");
+               System.out.println("Q - Quit");
                 switch (s.nextLine()) {
                     case "A":
-                        System.out.println("Admin");
-                        System.out.println("Status: " + (isFull ? "Full" : "Empty")); // add "no database"
-                        System.out.println("Reservations: " + reservationsSize);
-                        System.out.println("Rooms: " + roomsSize);
+                        boolean inAdmin = true;
+                        while(inAdmin){
+                           try
+                           {
+                           query = "select COUNT(*) from rooms";
+                           pstmt = conn.prepareStatement(query);
+                           rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
+                           rset.next( );
+                           roomsSize = rset.getInt("COUNT(*)");
+                           isFull = roomsSize >= 10;
+
+                           query = "select COUNT(*) from reservations";
+                           pstmt = conn.prepareStatement(query);
+                           rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
+                           rset.next( );
+                           reservationsSize = rset.getInt("COUNT(*)");
+                           isFull = isFull && reservationsSize >= 600;
+                           
+                           System.out.println("Admin");
+                           System.out.println("Status: " + (isFull ? "Full" : "Empty")); // add "no database"
+                           System.out.println("Reservations: " + reservationsSize);
+                           System.out.println("Rooms: " + roomsSize);
+                           }
+                           
+                           catch(Exception e)
+                           {
+                              System.out.println("Admin");
+                           System.out.println("Status: No Database");
+                           System.out.println("Reservations: 0");
+                           System.out.println("Rooms: 0");
+                           }
+                           
+                           System.out.println("\nOptions");
+                           System.out.println("V {Rooms | Reservations} - View {Rooms | Reservations} table");
+                           System.out.println("C - Clear Database");
+                           System.out.println("L - Load/Reload");
+                           System.out.println("RM - Remove Database");
+                           System.out.println("RET - Return");
+                           switch(s.nextLine())
+                           {
+                              case "C":
+                                 try
+                                 {
+                                 query = "delete from rooms;";
+                                 Statement clear = conn.createStatement();
+                                 clear.executeUpdate(query);
+                                 
+                                 query = "delete from reservations;";
+                                 clear = conn.createStatement();
+                                 clear.executeUpdate(query);
+                                 break;
+                                 }
+                                 catch(Exception e){break;}
+                              case "RM":
+                                 try{
+                                 query = "drop table rooms;";
+                                 Statement rm = conn.createStatement();
+                                 rm.executeUpdate(query);
+                                 
+                                 query = "drop table reservations;";
+                                 rm = conn.createStatement();
+                                 rm.executeUpdate(query);
+                                 break;
+                                 }
+                                 catch(Exception e){break;}
+                              case "V Rooms":
+                                 try{
+                                 query = "select * from rooms;";
+                                 pstmt = conn.prepareStatement(query);
+                                 rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
+                                 ResultSetMetaData rsmd = rset.getMetaData();
+                                 int columnsNumber = rsmd.getColumnCount();
+                                 System.out.println();
+                                 while (rset.next()) {
+                                    for (int j = 1; j <= columnsNumber; j++) {
+                                       if (j > 1) System.out.print(",  ");
+                                       String columnValue = rset.getString(j);
+                                       System.out.print(columnValue + " ");
+                                    }
+                                    System.out.println();
+                                 }
+                                 break;
+                                 }
+                                 catch(Exception e){break;}
+                              case "V Reservations":
+                                 try{
+                                 query = "select * from reservations;";
+                                 pstmt = conn.prepareStatement(query);
+                                 rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
+                                 ResultSetMetaData rsmd2 = rset.getMetaData();
+                                 int columnsNumber2 = rsmd2.getColumnCount();
+                                 System.out.println();
+                                 while (rset.next()) {
+                                    for (int j = 1; j <= columnsNumber2; j++) {
+                                       if (j > 1) System.out.print(",  ");
+                                       String columnValue = rset.getString(j);
+                                       System.out.print(columnValue + " ");
+                                    }
+                                    System.out.println();
+                                 }
+                                 break;
+                                 }
+                                 catch(Exception e){break;}
+                              case "RET":
+                                 inAdmin = false;
+                                 break;
+                              default:
+                                 System.out.println("Invalid option\n");
+                                 break;
+                           }
+                        }
                         break;
                     case "O":
-                        System.out.println("Owner");
+                        boolean inOwner = true;
+                        while(inOwner){
+                           System.out.print("Owner");
+                           System.out.println(" Options");
+                           System.out.println("O - Occupancy Overview");
+                           System.out.println("REV - View Revenue");
+                           System.out.println("[D] RES - View [Detailed] Reservations");
+                           System.out.println("ROOM - View Rooms");
+                           System.out.println("RET - Return");
+                           switch(s.nextLine())
+                           {
+                              case "O":
+                                 System.out.print("Enter one or two dates (format = MM-DD): ");
+                                 String date = s.nextLine();
+                                 query = "select name,isoccupied\n"
+                                 + "from\n"
+                                 + "(select distinct name,\n"
+                                 + "case\n"
+                                 + "when checkin <= '2010-" + date 
+                                 + "' and checkout >= '2010-" + date 
+                                 + "' then 'Occupied'\n"
+                                 + "else 'Empty'\n"
+                                 + "end\nas isoccupied\n"
+                                 + "from rooms ro, reservations re\n"
+                                 + "where ro.id = re.room\n"
+                                 + "order by isoccupied desc) as j\n"
+                                 + "group by name;";
+                                 System.out.println("\n" + query);
+                                 pstmt = conn.prepareStatement(query);
+                                 rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
+                                 ResultSetMetaData rsmd3 = rset.getMetaData();
+                                 int columnsNumber3 = rsmd3.getColumnCount();
+                                 System.out.println();
+                                 while (rset.next()) {
+                                    for (int j = 1; j <= columnsNumber3; j++) {
+                                       if (j > 1) System.out.print(",  ");
+                                       String columnValue = rset.getString(j);
+                                       System.out.print(columnValue + " ");
+                                    }
+                                    System.out.println();
+                                 }
+                                 break;
+                              case "RET":
+                                 inOwner = false;
+                                 break;
+                              default:
+                                 System.out.println("Invalid option\n");
+                                 break;
+                           }
+                        }
                         break;
                     case "G":
                         System.out.println("Guest");
@@ -114,7 +256,7 @@ class InnReservations {
                         inConsole = false;
                         break;
                     default:
-                        System.out.println("Invalid option");
+                        System.out.println("Invalid option\n");
                         break;
                 }
             }
