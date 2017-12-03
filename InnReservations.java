@@ -76,12 +76,12 @@ class InnReservations {
             }
             
             while (inConsole) {
-               System.out.println("Enter letter for subsystem:");
+               System.out.println("\nEnter letter for subsystem:");
                System.out.println("A - Admin");
                System.out.println("O - Owner");
                System.out.println("G - Guest");
                System.out.println("---------");
-               System.out.println("Q - Quit");
+               System.out.println("Q - Quit\n");
                 switch (s.nextLine()) {
                     case "A":
                         boolean inAdmin = true;
@@ -121,7 +121,7 @@ class InnReservations {
                            System.out.println("C - Clear Database");
                            System.out.println("L - Load/Reload");
                            System.out.println("RM - Remove Database");
-                           System.out.println("RET - Return");
+                           System.out.println("RET - Return\n");
                            switch(s.nextLine())
                            {
                               case "C":
@@ -152,38 +152,14 @@ class InnReservations {
                               case "V Rooms":
                                  try{
                                  query = "select * from rooms;";
-                                 pstmt = conn.prepareStatement(query);
-                                 rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
-                                 ResultSetMetaData rsmd = rset.getMetaData();
-                                 int columnsNumber = rsmd.getColumnCount();
-                                 System.out.println();
-                                 while (rset.next()) {
-                                    for (int j = 1; j <= columnsNumber; j++) {
-                                       if (j > 1) System.out.print(",  ");
-                                       String columnValue = rset.getString(j);
-                                       System.out.print(columnValue + " ");
-                                    }
-                                    System.out.println();
-                                 }
+                                 runAndPrint(query,conn);
                                  break;
                                  }
                                  catch(Exception e){break;}
                               case "V Reservations":
                                  try{
                                  query = "select * from reservations;";
-                                 pstmt = conn.prepareStatement(query);
-                                 rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
-                                 ResultSetMetaData rsmd2 = rset.getMetaData();
-                                 int columnsNumber2 = rsmd2.getColumnCount();
-                                 System.out.println();
-                                 while (rset.next()) {
-                                    for (int j = 1; j <= columnsNumber2; j++) {
-                                       if (j > 1) System.out.print(",  ");
-                                       String columnValue = rset.getString(j);
-                                       System.out.print(columnValue + " ");
-                                    }
-                                    System.out.println();
-                                 }
+                                 runAndPrint(query,conn);
                                  break;
                                  }
                                  catch(Exception e){break;}
@@ -203,9 +179,9 @@ class InnReservations {
                            System.out.println(" Options");
                            System.out.println("O - Occupancy Overview");
                            System.out.println("REV - View Revenue");
-                           System.out.println("[D] RES - View [Detailed] Reservations");
+                           System.out.println("RES - View Reservations");
                            System.out.println("ROOM - View Rooms");
-                           System.out.println("RET - Return");
+                           System.out.println("RET - Return\n");
                            switch(s.nextLine())
                            {
                               case "O":
@@ -224,37 +200,78 @@ class InnReservations {
                                  + "where ro.id = re.room\n"
                                  + "order by isoccupied desc) as j\n"
                                  + "group by name;";
-                                 pstmt = conn.prepareStatement(query);
-                                 rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
-                                 ResultSetMetaData rsmd3 = rset.getMetaData();
-                                 int columnsNumber3 = rsmd3.getColumnCount();
-                                 System.out.println();
-                                 while (rset.next()) {
-                                    for (int j = 1; j <= columnsNumber3; j++) {
-                                       if (j > 1) System.out.print(",  ");
-                                       String columnValue = rset.getString(j);
-                                       System.out.print(columnValue + " ");
-                                    }
-                                    System.out.println();
-                                 }
+                                 runAndPrint(query,conn);
                                  break;
                               case "REV":
                                  query = "select monthname(checkout),sum(rate*datediff(checkout,checkin))\n"
                                  + "from reservations\n"
                                  + "group by monthname(checkout)\n"
                                  + "order by month(checkout);";
-                                 pstmt = conn.prepareStatement(query);
-                                 rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
-                                 ResultSetMetaData rsmd4 = rset.getMetaData();
-                                 int columnsNumber4 = rsmd4.getColumnCount();
-                                 System.out.println();
-                                 while (rset.next()) {
-                                    for (int j = 1; j <= columnsNumber4; j++) {
-                                       if (j > 1) System.out.print(",  ");
-                                       String columnValue = rset.getString(j);
-                                       System.out.print(columnValue + " ");
-                                    }
-                                    System.out.println();
+                                 runAndPrint(query,conn);
+                                 break;
+                              case "RES":
+                                 System.out.println("View Reservations: Options");
+                                 System.out.println("T - Specify Time Period");
+                                 System.out.println("R - Specify Room");
+                                 System.out.println("TR - Specify Time Period and Room");
+                                 switch(s.nextLine())
+                                 {
+                                    case "T":
+                                       try
+                                       {
+                                       System.out.print("From: ");
+                                       String from = s.nextLine();
+                                       System.out.print("\nTo: ");
+                                       String to = s.nextLine();
+                                       
+                                       query = "select id\n"
+                                       + "from reservations\n"
+                                       + "where checkin >= '2010-" + from + "'\n"
+                                       + "and checkout <= '2010-" + to + "';";
+                                       runAndPrint(query,conn);
+                                       System.out.println();
+                                       }
+                                       catch(Exception e){
+                                          System.out.println("Invalid date(s). Returning to Owner options.");
+                                       }
+                                       break;
+                                    case "R":
+                                       try
+                                       {
+                                       System.out.print("Enter Room Code: ");
+                                       String rname = s.nextLine();
+                                       
+                                       query = "select re.id\n"
+                                       + "from reservations re, rooms ro\n"
+                                       + "where re.room = '" + rname + "';";
+                                       runAndPrint(query,conn);
+                                       System.out.println();
+                                       }
+                                       catch(Exception e){
+                                        System.out.println("Invalid code. Returning to Owner options.");
+                                       }
+                                       break;
+                                    case "TR":
+                                       try
+                                       {
+                                       System.out.print("From: ");
+                                       String tfrom = s.nextLine();
+                                       System.out.print("\nTo: ");
+                                       String tto = s.nextLine();
+                                       System.out.print("Enter Room Code: ");
+                                       String trname = s.nextLine();
+                                       query = "select id\n"
+                                       + "from reservations\n"
+                                       + "where checkin >= '2010-" + tfrom + "'\n"
+                                       + "and checkout <= '2010-" + tto + "'\n"
+                                       + "and room = '" + trname + "';";
+                                       runAndPrint(query,conn);
+                                       System.out.println();
+                                       }
+                                       catch(Exception e){
+                                        System.out.println("Invalid input. Returning to Owner options.");
+                                       }
+                                       break;
                                  }
                                  break;
                               case "RET":
@@ -276,7 +293,7 @@ class InnReservations {
                         System.out.println("P - Check Room Pricing");
                         System.out.println("R - Reserve a Room");
                         System.out.println("C - Complete a Reservation");
-                        System.out.println("RET - Return");
+                        System.out.println("RET - Return\n");
                         switch(s.nextLine())
                         {
                            case "RET":
@@ -317,4 +334,23 @@ class InnReservations {
             catch (Exception e){}	
         } // end finally   	
     } // end main
+    
+    //RUNS A SELECT QUERY AND PRINTS ALL OF ITS CONTENT
+    static void runAndPrint(String query, Connection conn) throws SQLException
+    {
+       PreparedStatement pstmt = conn.prepareStatement(query);
+       ResultSet rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
+       ResultSetMetaData rsmd = rset.getMetaData();
+       int columnsNumber = rsmd.getColumnCount();
+       System.out.println();
+       while (rset.next()) {
+         for (int j = 1; j <= columnsNumber; j++) {
+            if (j > 1) System.out.print(",  ");
+            String columnValue = rset.getString(j);
+            System.out.print(columnValue + " ");
+         }
+         System.out.println();
+       }
+    }
+    
 } // end class
