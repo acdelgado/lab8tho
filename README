@@ -1,3 +1,13 @@
 Lab 8
 Ryan Hartzell (rhartzel) & Anthony Delgado (acdelgad)
 CPE 365 - Introduction to Databases
+
+Compilation:
+javac InnReservations.java
+
+To Run:
+java InnReservations
+
+Errors/Deficiencies:
+ - Guest subsystem is not completely implemented
+ - Unable to repopulate tables in admin subsystem
