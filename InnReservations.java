@@ -209,7 +209,7 @@ class InnReservations {
                            switch(s.nextLine())
                            {
                               case "O":
-                                 System.out.print("Enter one or two dates (format = MM-DD): ");
+                                 System.out.print("Enter a date (format = MM-DD): ");
                                  String date = s.nextLine();
                                  query = "select name,isoccupied\n"
                                  + "from\n"
@@ -224,7 +224,6 @@ class InnReservations {
                                  + "where ro.id = re.room\n"
                                  + "order by isoccupied desc) as j\n"
                                  + "group by name;";
-                                 System.out.println("\n" + query);
                                  pstmt = conn.prepareStatement(query);
                                  rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
                                  ResultSetMetaData rsmd3 = rset.getMetaData();
@@ -232,6 +231,25 @@ class InnReservations {
                                  System.out.println();
                                  while (rset.next()) {
                                     for (int j = 1; j <= columnsNumber3; j++) {
+                                       if (j > 1) System.out.print(",  ");
+                                       String columnValue = rset.getString(j);
+                                       System.out.print(columnValue + " ");
+                                    }
+                                    System.out.println();
+                                 }
+                                 break;
+                              case "REV":
+                                 query = "select monthname(checkout),sum(rate*datediff(checkout,checkin))\n"
+                                 + "from reservations\n"
+                                 + "group by monthname(checkout)\n"
+                                 + "order by month(checkout);";
+                                 pstmt = conn.prepareStatement(query);
+                                 rset = pstmt.executeQuery();   // NO PARAMETER NEEDED
+                                 ResultSetMetaData rsmd4 = rset.getMetaData();
+                                 int columnsNumber4 = rsmd4.getColumnCount();
+                                 System.out.println();
+                                 while (rset.next()) {
+                                    for (int j = 1; j <= columnsNumber4; j++) {
                                        if (j > 1) System.out.print(",  ");
                                        String columnValue = rset.getString(j);
                                        System.out.print(columnValue + " ");
@@ -249,8 +267,27 @@ class InnReservations {
                         }
                         break;
                     case "G":
-                        System.out.println("Guest");
-                        break;
+                     boolean inGuest = true;
+                     while(inGuest)
+                     {
+                        System.out.println("Guest Options");
+                        System.out.println("D - Room Details");
+                        System.out.println("A - Check Room Availability");
+                        System.out.println("P - Check Room Pricing");
+                        System.out.println("R - Reserve a Room");
+                        System.out.println("C - Complete a Reservation");
+                        System.out.println("RET - Return");
+                        switch(s.nextLine())
+                        {
+                           case "RET":
+                              inGuest = false;
+                              break;
+                           default:
+                              System.out.println("Invalid option\n");
+                              break;
+                        }
+                     }
+                     break;
                     case "Q":
                         System.out.println("Goodbye");
                         inConsole = false;
