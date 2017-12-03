@@ -229,7 +229,6 @@ class InnReservations {
                                        + "where checkin >= '2010-" + from + "'\n"
                                        + "and checkout <= '2010-" + to + "';";
                                        runAndPrint(query,conn);
-                                       System.out.println();
                                        }
                                        catch(Exception e){
                                           System.out.println("Invalid date(s). Returning to Owner options.");
@@ -241,11 +240,10 @@ class InnReservations {
                                        System.out.print("Enter Room Code: ");
                                        String rname = s.nextLine();
                                        
-                                       query = "select re.id\n"
-                                       + "from reservations re, rooms ro\n"
-                                       + "where re.room = '" + rname + "';";
+                                       query = "select id\n"
+                                       + "from reservations\n"
+                                       + "where room = '" + rname + "';";
                                        runAndPrint(query,conn);
-                                       System.out.println();
                                        }
                                        catch(Exception e){
                                         System.out.println("Invalid code. Returning to Owner options.");
@@ -266,12 +264,51 @@ class InnReservations {
                                        + "and checkout <= '2010-" + tto + "'\n"
                                        + "and room = '" + trname + "';";
                                        runAndPrint(query,conn);
-                                       System.out.println();
                                        }
                                        catch(Exception e){
                                         System.out.println("Invalid input. Returning to Owner options.");
                                        }
                                        break;
+                                 }
+                                 System.out.print("Select a reservation number (OR RET to return to Owner options): ");
+                                 String resNum = s.nextLine();
+                                 if(resNum.equals("RET")) break;
+                                 query = "select ro.name,re.* from reservations re, rooms ro\n"
+                                 + "where re.id = " + resNum + " and ro.id = re.room;";
+                                 runAndPrint(query,conn);
+                                 break;
+                              case "ROOM":
+                                 System.out.println("Room Names:");
+                                 query = "select name from rooms;";
+                                 runAndPrint(query,conn);
+                                 System.out.println("View Rooms: Options");
+                                 System.out.println("1 - View Full Room Info");
+                                 System.out.println("2 - View all Reservations under Room\n");
+                                 switch(s.nextLine())
+                                 {
+                                    case "1":
+                                       System.out.print("Enter Room Name: ");
+                                       String rmname = s.nextLine();
+                                       query = "select ro.*,sum(datediff(checkout,checkin)), "
+                                       +"sum(rate*datediff(checkout,checkin))\n"
+                                       + "from rooms ro, reservations re\n"
+                                       + "where re.room = ro.id and ro.name = '" + rmname + "';";
+                                       runAndPrint(query,conn);
+                                       break;
+                                    case "2":
+                                       System.out.print("Enter Room Name: ");
+                                       String rmname2 = s.nextLine();
+                                       query = "select re.id,checkin,checkout "
+                                       + "from rooms ro, reservations re\n"
+                                       + "where re.room = ro.id and ro.name = '" + rmname2 + "'\n"
+                                       + "order by checkin";
+                                       runAndPrint(query,conn);
+                                       System.out.print("Select a reservation number (OR RET to return to Owner options): ");
+                                       String resNum2 = s.nextLine();
+                                       if(resNum2.equals("RET")) break;
+                                       query = "select ro.name,re.* from reservations re, rooms ro\n"
+                                       + "where re.id = " + resNum2 + " and ro.id = re.room;";
+                                       runAndPrint(query,conn);
                                  }
                                  break;
                               case "RET":
@@ -351,6 +388,7 @@ class InnReservations {
          }
          System.out.println();
        }
+       System.out.println();
     }
     
 } // end class
