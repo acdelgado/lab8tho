@@ -1,7 +1,3 @@
-//  Sample JDBC code illustrating making a table with three tuples
-//  for use in the Select and Select2 JDBC sample programs.
-//  We use a PreparedStatement object.
-//  E.E. Buckalew (ok, so yeah, I borrowed sections from Dr. M. Liu)
 import java.io.*;
 import java.util.*;
 import java.sql.*;
